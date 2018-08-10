@@ -52,6 +52,7 @@ public class ColorBlobDetectionActivity extends Activity implements View.OnTouch
                 {
                     Log.i(TAG, "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
+
                     mOpenCvCameraView.setOnTouchListener(ColorBlobDetectionActivity.this);
                 } break;
                 default:
@@ -78,6 +79,7 @@ public class ColorBlobDetectionActivity extends Activity implements View.OnTouch
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
