@@ -39,6 +39,7 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
     public static final int      VIEW_MODE_ZOOM      = 5;
     public static final int      VIEW_MODE_PIXELIZE  = 6;
     public static final int      VIEW_MODE_POSTERIZE = 7;
+    public static final int      VIEW_MODE_GRAYSCALE = 8;
 
     private MenuItem             mItemPreviewRGBA;
     private MenuItem             mItemPreviewHist;
@@ -48,6 +49,7 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
     private MenuItem             mItemPreviewZoom;
     private MenuItem             mItemPreviewPixelize;
     private MenuItem             mItemPreviewPosterize;
+    private MenuItem             mItemPreviewGrayScale;
     private CameraBridgeViewBase mOpenCvCameraView;
 
     private Size                 mSize0;
@@ -141,6 +143,7 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
         mItemPreviewZoom  = menu.add("Zoom");
         mItemPreviewPixelize  = menu.add("Pixelize");
         mItemPreviewPosterize = menu.add("Posterize");
+        mItemPreviewGrayScale = menu.add("GrayScale");
         return true;
     }
 
@@ -163,6 +166,8 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
             viewMode = VIEW_MODE_PIXELIZE;
         else if (item == mItemPreviewPosterize)
             viewMode = VIEW_MODE_POSTERIZE;
+        else if (item == mItemPreviewGrayScale)
+            viewMode = VIEW_MODE_GRAYSCALE;
         return true;
     }
 
@@ -240,6 +245,7 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
                 }
                 // Value and Hue
                 Imgproc.cvtColor(rgba, mIntermediateMat, Imgproc.COLOR_RGB2HSV_FULL);
+
                 // Value
                 Imgproc.calcHist(Arrays.asList(mIntermediateMat), mChannels[2], mMat0, hist, mHistSize, mRanges);
                 Core.normalize(hist, hist, sizeRgba.height/2, 0, Core.NORM_INF);
@@ -278,6 +284,7 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
                 Imgproc.cvtColor(mIntermediateMat, rgbaInnerWindow, Imgproc.COLOR_GRAY2BGRA, 4);
                 grayInnerWindow.release();
                 rgbaInnerWindow.release();
+
                 break;
 
             case ImageManipulationsActivity.VIEW_MODE_SEPIA:
@@ -294,6 +301,15 @@ public class ImageManipulationsActivity extends Activity implements CvCameraView
                 Imgproc.rectangle(mZoomWindow, new Point(1, 1), new Point(wsize.width - 2, wsize.height - 2), new Scalar(255, 0, 0, 255), 2);
                 zoomCorner.release();
                 mZoomWindow.release();
+                break;
+
+            case ImageManipulationsActivity.VIEW_MODE_GRAYSCALE:
+
+                rgbaInnerWindow = rgba.submat(top, top + height, left, left + width);
+
+                Imgproc.cvtColor(rgbaInnerWindow,rgbaInnerWindow,Imgproc.COLOR_BGR2GRAY);
+                rgbaInnerWindow.release();
+
                 break;
 
             case ImageManipulationsActivity.VIEW_MODE_PIXELIZE:
