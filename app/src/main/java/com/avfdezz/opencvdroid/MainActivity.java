@@ -1,8 +1,12 @@
 package com.avfdezz.opencvdroid;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -14,7 +18,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private Button bPuzzle15;
     private Button bCameraControl;
     private Button bImageMan;
-
+    private static final int PERMISSION_CAMERA = 1;
     private Intent intent;
 
     @Override
@@ -31,6 +35,30 @@ public class MainActivity extends Activity implements View.OnClickListener{
         bCameraControl.setOnClickListener(this);
         bPuzzle15.setOnClickListener(this);
         bImageMan.setOnClickListener(this);
+
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    PERMISSION_CAMERA);
+        }
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_CAMERA: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                }
+                return;
+            }
+        }
     }
 
     @Override
@@ -41,7 +69,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 startActivity(intent);
                 break;
             case R.id.b_puzzle15:
-                intent = new Intent(MainActivity.this, Puzzle15Activity.class);
+                intent = new Intent(MainActivity.this, SetActivity.class);
                 startActivity(intent);
                 break;
             case R.id.button3:

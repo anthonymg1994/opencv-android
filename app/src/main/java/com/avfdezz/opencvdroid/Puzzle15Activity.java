@@ -11,14 +11,25 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener;
 import org.opencv.android.JavaCameraView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.CountDownTimer;
+
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Puzzle15Activity extends Activity implements CvCameraViewListener, View.OnTouchListener {
 
@@ -28,10 +39,13 @@ public class Puzzle15Activity extends Activity implements CvCameraViewListener, 
     private Puzzle15Processor    mPuzzle15;
     private MenuItem             mItemHideNumbers;
     private MenuItem             mItemStartNewGame;
-
-
+    private TextView             tvTime;
+    private CountDownTimer       timer;
     private int                  mGameWidth;
     private int                  mGameHeight;
+    private AlertDialog alertDialog;
+    private  AlertDialog         alertDialog2;
+
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 
@@ -57,17 +71,82 @@ public class Puzzle15Activity extends Activity implements CvCameraViewListener, 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.camera_game);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        Log.d(TAG, "Creating and setting view");
-        mOpenCvCameraView = (CameraBridgeViewBase) new JavaCameraView(this, -1);
-        setContentView(mOpenCvCameraView);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.surface);
+        tvTime = (TextView) findViewById(R.id.time);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mPuzzle15 = new Puzzle15Processor();
         mPuzzle15.prepareNewGame();
+        startGame();
     }
 
+    public void startGame(){
+        timer = new CountDownTimer(1000000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                tvTime.setText("" + millisUntilFinished / 1000);
+                if((millisUntilFinished / 1000) <= 3){
+                    tvTime.setTextColor(Color.parseColor("#ff0000"));
+                }
+                if(mPuzzle15.isFinished()){
+                    timer.cancel();
+                    alert2();
+
+                }
+
+                //here you can have your logic to set text to edittext
+            }
+
+            public void onFinish() {
+                tvTime.setText("0");
+                alert();
+            }
+
+        }.start();
+    }
+
+    public void alert2(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Felicidades");
+        alertDialogBuilder.setMessage("Completaste el puzzle");
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        onBackPressed();
+                        alertDialog.dismiss();
+                    }
+                });
+
+        alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+    public void alert(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Perdiste");
+        alertDialogBuilder.setMessage("Quieres volver intentarlo?");
+        alertDialogBuilder.setPositiveButton("Si",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        alertDialog2.dismiss();
+                        mPuzzle15.prepareNewGame();
+                        startGame();
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onBackPressed();
+            }
+        });
+
+        alertDialog2 = alertDialogBuilder.create();
+        alertDialog2.show();
+    }
     @Override
     public void onPause()
     {
@@ -144,5 +223,12 @@ public class Puzzle15Activity extends Activity implements CvCameraViewListener, 
 
     public Mat onCameraFrame(Mat inputFrame) {
         return mPuzzle15.puzzleFrame(inputFrame);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        super.onBackPressed();  // optional depending on your needs
     }
 }

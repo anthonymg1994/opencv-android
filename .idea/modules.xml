@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/OpenCVDroid.iml" filepath="$PROJECT_DIR$/OpenCVDroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/openCVLibrary342/openCVLibrary342.iml" filepath="$PROJECT_DIR$/openCVLibrary342/openCVLibrary342.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opencv-android.iml" filepath="$PROJECT_DIR$/opencv-android.iml" />
     </modules>
   </component>
 </project>

@@ -178,7 +178,7 @@ public class Puzzle15Processor {
         }
     }
 
-    private boolean isPuzzleSolvable() {
+    public boolean isPuzzleSolvable() {
 
         int sum = 0;
         for (int i = 0; i < GRID_AREA; i++) {
@@ -194,5 +194,14 @@ public class Puzzle15Processor {
             }
         }
         return sum % 2 == 0;
+    }
+    public boolean isFinished(){
+        boolean flag = true;
+        for(int y = 0; y < GRID_AREA; y++){
+            if(mIndexes[y] != y){
+                flag = false;
+            }
+        }
+        return flag;
     }
 }
